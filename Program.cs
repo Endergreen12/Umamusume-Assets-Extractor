@@ -59,7 +59,7 @@ if (File.Exists(metaPath))
         "
         ;
 
-        Console.WriteLine("ファイルのコピーを開始しました。(もしこの画面で長い時間止まっている場合は、ダンプするフォルダーの名前を存在しないものに指定している可能性があります。その場合、結局何もコピーされないので、ただ待たされるだけです。)");
+        Console.WriteLine("ファイルのコピーを開始しました。");
 
         using (var reader = command.ExecuteReader())
         {
@@ -74,7 +74,10 @@ if (File.Exists(metaPath))
                 var sourceDir = datPath + @"\" + sourceFileName.Substring(0, 2) + @"\" + sourceFileName; // 例:"datPath\EK\EK5FIH4TY23JRVW2XNTCNCEQGSZSRFPT"
 
                 if (!CheckCanBeCopied(reader, datPath, dumpFolder, fileDir, sourceFileName, sourceDir))
+                {
+                    Console.WriteLine($"{String.Join(@"\", fileDir)}は条件に合っていないのでスキップします。");
                     continue;
+                }
 
                 Console.WriteLine($"{sourceFileName} -> {String.Join(@"\", fileDir)}");
 
@@ -100,7 +103,7 @@ if (File.Exists(metaPath))
 Console.WriteLine("展開したフォルダーをエクスプローラーで開きますか？(Y)");
 var pressedKey = Console.ReadKey();
 if (pressedKey.Key == ConsoleKey.Y)
-    System.Diagnostics.Process.Start("explorer.exe", dumpFolder);
+    System.Diagnostics.Process.Start("explorer.exe", extractFolderName);
 
 void CalculateWillBeCopiedFilesAmount()
 {
