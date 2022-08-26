@@ -1,146 +1,76 @@
 ﻿using Microsoft.Data.Sqlite;
 using System.Reflection.PortableExecutable;
 using System.Threading;
-
-var uaeName = "Umamusume Assets Extractor";
+using static Umamusume_Assets_Extractor.Utils;
 
 // 起動
-Console.Title = uaeName;
-Console.WriteLine(uaeName);
+UpdateConsoleTitle();
+Console.WriteLine(appName);
 Console.WriteLine("自分が見たいファイルがなかった場合はウマ娘で一括ダウンロードをしてください。");
+Console.WriteLine($"ダンプしたファイルは{extractFolderName}というフォルダーに保存されます。");
+Console.WriteLine();
 
-// フォルダー名の指定
-var extractFolderName = "";
-while (extractFolderName == "")
+// ログを表示するかの確認
+Console.WriteLine("コンソールにログを表示しますか？");
+Console.WriteLine("表示すると、実行速度が少し遅くなります。速度を求める場合は表示しないことをお勧めします。表示しなくてもタイトルバーで進捗を確認できます。");
+Console.Write("表示する場合はYを、しない場合は他のキーを押してください:");
+if (Console.ReadKey().Key == ConsoleKey.Y)
+    verboseMode = true;
+
+
+
+// ダンプするフォルダーを指定する
+var dumpFolder = "";
+Console.WriteLine();
+Console.WriteLine();
+while (true)
 {
-    Console.Write("\r\n展開したファイルを保存するフォルダー名を入力してください。\r\nもしその名前のフォルダーが既に存在していた場合、そのフォルダーは削除されます。\r\nフォルダー名を入力:");
-    extractFolderName = Console.ReadLine();
+    Console.WriteLine("ダンプするフォルダーを指定してください。指定しない場合は空欄にするとすべてをダンプします。");
+    Console.WriteLine("例:soundを指定するとacbファイルとawbファイルが入っているsoundフォルダーのみダンプします。");
+    Console.WriteLine("フォルダー一覧を表示したい場合はlistと入力してください。");
+    Console.WriteLine("注意:フォルダ一覧に表示された一部のフォルダはダンプできません。(Windowsやrootなど)");
+    Console.Write("フォルダー名を入力:");
+    dumpFolder = Console.ReadLine();
 
-    if (extractFolderName != "")
+    if (dumpFolder != "list")
         break;
 
-    Console.WriteLine("空欄は許可されていません。もう一度入力してください。");
+    PrintFolders();
 }
 
-// 必要な場合展開するフォルダーを指定する(ウマ娘側のフォルダーという意味)
-var dumpFolder = "";
-Console.Write("\r\n必要な場合、ダンプするウマ娘のアセットのフォルダーを指定してください。(例: story, live, sound など)\r\n空欄にするとすべてをダンプしますが、とんでもない時間がかかるのでダンプしたいものを指定することをお勧めします。\r\nフォルダー名を入力:");
-dumpFolder = Console.ReadLine();
-
-// フォルダーが存在していた場合、ここで削除
-if (Directory.Exists(extractFolderName))
+if (dumpFolder == null)
 {
-    Console.WriteLine($"フォルダー{extractFolderName}を削除中");
-    Directory.Delete(extractFolderName, true);
+    dumpFolder = "";
 }
 
-Console.WriteLine($"フォルダー{extractFolderName}を作成中");
-Directory.CreateDirectory(extractFolderName);
+if (!Directory.Exists(extractFolderName))
+{
+    PrintLogIfVerboseModeIsOn($"フォルダー{extractFolderName}を作成中");
+    Directory.CreateDirectory(extractFolderName);
+}
 
-// 変数の宣言
-var localappdata = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-var gamePath = localappdata + @"Low\Cygames\umamusume";
-var metaPath = gamePath + @"\meta";
-var datPath = gamePath + @"\dat";
-var willBeCopiedFilesAmount = 0;
-
+var isExtracted = false;
 // ファイルをコピー
 if (File.Exists(metaPath))
 {
-    using (var connection = new SqliteConnection($"Data Source={metaPath}"))
-    {
-        connection.Open();
+    CopySourceFiles(dumpFolder);
 
-        var command = connection.CreateCommand();
-        command.CommandText = // nはディレクトリ、 hはソースファイル
-        @"
-            SELECT n, h
-            FROM a
-        "
-        ;
+    UpdateConsoleTitle("done");
 
-        Console.WriteLine("ファイルのコピーを開始しました。");
-
-        using (var reader = command.ExecuteReader())
-        {
-            Thread thread = new Thread(new ThreadStart(CalculateWillBeCopiedFilesAmount)); // 裏でコピーするファイル数の計算
-            thread.Start();
-
-            var copiedFileAmount = 0;
-            while (reader.Read())
-            {
-                var fileDir = reader.GetString(0).Split("/"); // 例:"sound/v/snd_voi_race_104602.acb"
-                var sourceFileName = reader.GetString(1);     // 例:"EK5FIH4TY23JRVW2XNTCNCEQGSZSRFPT"
-                var sourceDir = datPath + @"\" + sourceFileName.Substring(0, 2) + @"\" + sourceFileName; // 例:"datPath\EK\EK5FIH4TY23JRVW2XNTCNCEQGSZSRFPT"
-
-                if (!CheckCanBeCopied(reader, datPath, dumpFolder, fileDir, sourceFileName, sourceDir))
-                {
-                    Console.WriteLine($"{String.Join(@"\", fileDir)}は条件に合っていないのでスキップします。");
-                    continue;
-                }
-
-                Console.WriteLine($"{sourceFileName} -> {String.Join(@"\", fileDir)}");
-
-                var extractDir = Directory.CreateDirectory(extractFolderName + @"\" + String.Join(@"\", fileDir.SkipLast(1))); // ディレクトリを作成してパスをextractDirに格納
-
-                File.Copy(sourceDir, extractDir + @"\" + fileDir.Last()); // ソースファイルを保存先にコピー
-
-                copiedFileAmount++;
-
-                int donePer = (int)((float)copiedFileAmount / (float)willBeCopiedFilesAmount * 100);
-
-                Console.Title = $"{uaeName} - 残り {copiedFileAmount} / {willBeCopiedFilesAmount} - {donePer}%完了";
-            }
-
-            Console.WriteLine($"完了しました。 トータルでコピーしたファイル: {copiedFileAmount}");
-        }
-    }
+    isExtracted = true;
 } else
 {
     Console.WriteLine("metaファイルが見つかりませんでした。\r\n一回ウマ娘を起動してみてください。");
 }
 
-Console.WriteLine("展開したフォルダーをエクスプローラーで開きますか？(Y)");
-var pressedKey = Console.ReadKey();
-if (pressedKey.Key == ConsoleKey.Y)
-    System.Diagnostics.Process.Start("explorer.exe", extractFolderName);
-
-void CalculateWillBeCopiedFilesAmount()
+if (isExtracted)
 {
-    using (var connection = new SqliteConnection($"Data Source={metaPath}"))
-    {
-        connection.Open();
-
-        var command = connection.CreateCommand();
-        command.CommandText =
-        @"
-            SELECT n, h
-            FROM a
-        "
-        ;
-
-        using (var reader = command.ExecuteReader())
-        {
-            while (reader.Read())
-            {
-                var fileDir = reader.GetString(0).Split("/");
-                var sourceFileName = reader.GetString(1);
-                var sourceDir = datPath + @"\" + sourceFileName.Substring(0, 2) + @"\" + sourceFileName;
-
-                if (!CheckCanBeCopied(reader, datPath, dumpFolder, fileDir, sourceFileName, sourceDir))
-                    continue;
-
-                willBeCopiedFilesAmount++;
-            }
-        }
-
-    }
-}
-
-bool CheckCanBeCopied(SqliteDataReader reader, string datPath, string dumpFolder, string[] fileDir, string sourceFileName, string sourceDir)
+    Console.WriteLine("展開したフォルダーをエクスプローラーで開きますか？(Y)");
+    var pressedKey = Console.ReadKey();
+    if (pressedKey.Key == ConsoleKey.Y)
+        System.Diagnostics.Process.Start("explorer.exe", extractFolderName);
+} else
 {
-    if (dumpFolder != "" && fileDir[0] != dumpFolder || !File.Exists(sourceDir) || reader.GetString(0).Substring(0, 2) == "//")
-        return false;     // ダンプするフォルダーが指定されていて、ダンプしようとしたフォルダーがそれではない場合と、ソースファイルがまだダウンロードされていなかった場合、
-                          // ファイル名の最初に"//"がついてるファイル(manifest?)というファイルだった場合はコピーをスキップします。
-    return true;
+    Console.WriteLine("何かキーを押して終了します...");
+    Console.ReadKey();
 }
