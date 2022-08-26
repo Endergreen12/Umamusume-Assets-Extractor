@@ -127,6 +127,8 @@ namespace Umamusume_Assets_Extractor
             }
         }
 
+        // FileCompare関数はMicrosoftさんの"Visual C# を使用してFile-Compare関数を作成する"からいただきました。
+
         // This method accepts two strings the represent two files to
         // compare. A return value of 0 indicates that the contents of the files
         // are the same. A return value of any other value indicates that the
