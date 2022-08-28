@@ -19,13 +19,19 @@ sound/l/1001/snd_bgm_live_1001_oke_01.awbですが、実際は
 
 この工程を全自動でやってくれるアプリを作りました。
 
-こんな感じにしてくれます
+こんな感じにコピーしてくれます。
 
 ![image](https://user-images.githubusercontent.com/90076182/186937978-bc7c62ba-1fc0-4f5a-9aa2-bb5e268610ce.png)
 
 (音楽ファイルのawbファイルを再生する方法を一番下に書いておきました)
 
 ## 使い方
+### ダウンロード
+ダウンロードはこのサイトの右側にあるReleasesをクリックして最新のリリースをダウンロードしてください。
+
+![image](https://user-images.githubusercontent.com/90076182/187061141-98daf275-ddd1-457d-9bba-2bdd649139fc.png)
+
+### アプリの使い方
 動画: https://www.youtube.com/watch?v=OIHdvQwi-ig
 
 ## 注意
