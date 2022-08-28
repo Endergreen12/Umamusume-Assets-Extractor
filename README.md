@@ -23,16 +23,20 @@ sound/l/1001/snd_bgm_live_1001_oke_01.awbですが、実際は
 
 ![image](https://user-images.githubusercontent.com/90076182/186937978-bc7c62ba-1fc0-4f5a-9aa2-bb5e268610ce.png)
 
-(音楽ファイルのawbファイルを再生する方法を一番下に書いておきました)
+(awbファイルの開き方は[こちら](#おまけawbファイルの再生の仕方))
+
 
 ## 使い方
+
 ### ダウンロード
 ダウンロードはこのサイトの右側にあるReleasesをクリックして最新のリリースをダウンロードしてください。
 
 ![image](https://user-images.githubusercontent.com/90076182/187061141-98daf275-ddd1-457d-9bba-2bdd649139fc.png)
 
+
 ### アプリの使い方
 動画: https://www.youtube.com/watch?v=OIHdvQwi-ig
+
 
 ## 注意
 ### ダウンロードされているかについて
@@ -41,6 +45,7 @@ sound/l/1001/snd_bgm_live_1001_oke_01.awbですが、実際は
 (例:BLOW my GALEを一回も見たことがない場合はBLOW my GALEの音楽ファイルをダンプできない)
 
 もし自分が見たいファイルが見つからなかった場合はウマ娘で一括ダウンロードしてからダンプしてみてください。
+
 
 ### IDについて
 IDを知っておくと自分が欲しいファイルが簡単に見つけられます。
@@ -54,6 +59,7 @@ BLOW my GALEのライブIDは1048なので、BLOW my GALEの音楽ファイル�
 https://github.com/Endergreen12/text_dumper
 
 このアプリは、キャラID、衣装ID、ライブIDそしてそれに対応するキャラやライブの名前が書いてあるテキストファイルを生成してくれます。
+
 
 ## おまけ:awbファイルの再生の仕方
 動画: https://youtu.be/IsJBgcroclI
