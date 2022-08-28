@@ -56,4 +56,4 @@ foobar2000のダウンロードリンク:https://www.foobar2000.org/download
 
 vgmstreamのダウンロードリンク:https://vgmstream.org/downloads
 
-ちなみにawbファイルと一緒にあるacbファイルはゲーム側で再生するときは必要ですが、foobar2000で再生するときは必要はありません。
+ちなみにawbファイルと一緒に置いてあるacbファイルはゲーム側で再生するときは必要ですが、foobar2000で再生するときは必要はありません。
