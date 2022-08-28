@@ -52,4 +52,8 @@ https://github.com/Endergreen12/text_dumper
 ## おまけ:awbファイルの再生の仕方
 動画: https://youtu.be/IsJBgcroclI
 
+foobar2000のダウンロードリンク:https://www.foobar2000.org/download
+
+vgmstreamのダウンロードリンク:https://vgmstream.org/downloads
+
 ちなみにawbファイルと一緒にあるacbファイルはゲーム側で再生するときは必要ですが、foobar2000で再生するときは必要はありません。
