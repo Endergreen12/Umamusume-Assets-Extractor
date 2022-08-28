@@ -56,7 +56,7 @@ BLOW my GALEのライブIDは1048なので、BLOW my GALEの音楽ファイル�
 
 もしIDがわからない場合、umamusume-localifyの作者さんが作ったものを改造させてもらったものがあるので、使ってください。
 
-https://github.com/Endergreen12/text_dumper
+https://github.com/Endergreen12/Umamusume-ID-Dumper
 
 このアプリは、キャラID、衣装ID、ライブIDそしてそれに対応するキャラやライブの名前が書いてあるテキストファイルを生成してくれます。
 
