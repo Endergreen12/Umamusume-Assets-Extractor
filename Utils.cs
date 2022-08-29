@@ -12,6 +12,7 @@ namespace Umamusume_Assets_Extractor
         // アプリ関連の設定
         public static string appName = "Umamusume Assets Extractor";
         public static bool verboseMode = false;
+        public static bool isDumpTargetFile = false;
         public static int willBeCopiedFilesAmount = 0;
         public static int copiedFilesAmount = 0;
         public static int skippedFilesAmount = 0;
@@ -24,10 +25,19 @@ namespace Umamusume_Assets_Extractor
         public static string filePathColumn = "n";
         public static string sourceFileNameColumn = "h";
         public static string isDownloadedColumn = "s";
+        public static string fileTypeColumn = "m";
+        public static string excludeFileTypeWord = "manifest";
         public static string tableName = "a";
+        public static string searchCriteria = @$"
+                                                    FROM {tableName}
+                                                    WHERE {isDownloadedColumn} = 1
+                                                    AND {fileTypeColumn} NOT LIKE ""%{excludeFileTypeWord}%""
+                                                ";
 
-        public static int CalucateWillBeCopiedFilesAmount(string dumpFolder = "")
+        public static int CalucateWillBeCopiedFilesAmount(string dumpTarget = "")
         {
+            var amount = 0;
+
             using (var connection = new SqliteConnection($"Data Source={metaPath}"))
             {
                 connection.Open();
@@ -36,29 +46,25 @@ namespace Umamusume_Assets_Extractor
                 command.CommandText =
                 @$"
                     SELECT count(*)
-                    FROM {tableName}
-                    WHERE {isDownloadedColumn} = 1
+                    {searchCriteria}
+                    {GetRefinementString(dumpTarget)}
                 ";
-                if (dumpFolder != "")
-                    command.CommandText += @"
-                                                AND n LIKE """ + dumpFolder + @"/%""
-                                           ";
 
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        return reader.GetInt32(0);
+                        amount = reader.GetInt32(0);
                     }
                 }
             }
 
-            return 0;
+            return amount;
         }
 
-        public static void CopySourceFiles(string dumpFolder = "")
+        public static void CopySourceFiles(string dumpTarget = "")
         {
-            willBeCopiedFilesAmount = CalucateWillBeCopiedFilesAmount(dumpFolder);
+            willBeCopiedFilesAmount = CalucateWillBeCopiedFilesAmount(dumpTarget);
 
             if (willBeCopiedFilesAmount == 0)
                 return;
@@ -71,13 +77,9 @@ namespace Umamusume_Assets_Extractor
                 command.CommandText =
                 $@"
                     SELECT {filePathColumn}, {sourceFileNameColumn}
-                    FROM {tableName}
-                    WHERE {isDownloadedColumn} = 1
+                    {searchCriteria}
+                    {GetRefinementString(dumpTarget)}
                 ";
-                if (dumpFolder != "")
-                    command.CommandText += @"
-                                                AND n LIKE """ + dumpFolder + @"/%""
-                                           ";
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -87,12 +89,20 @@ namespace Umamusume_Assets_Extractor
                     {
                         UpdateConsoleTitle("copying");
 
-                        var fileDir = reader.GetString(0); // 例:"sound/v/snd_voi_race_104602.acb"
-                        var sourceFileName = reader.GetString(1);     // 例:"EK5FIH4TY23JRVW2XNTCNCEQGSZSRFPT"
-                        var sourceFileDir = datPath + @"\" + sourceFileName.Substring(0, 2) + @"\" + sourceFileName; // 例:"datPath\EK\EK5FIH4TY23JRVW2XNTCNCEQGSZSRFPT"
+                        var fileDir = reader.GetString(0); // 代入される例:"sound/v/snd_voi_race_104602.acb"
+                        var sourceFileName = reader.GetString(1);     // 代入される例:"EK5FIH4TY23JRVW2XNTCNCEQGSZSRFPT"
+                        var sourceFileDir = datPath + "\\" + sourceFileName.Substring(0, 2) + "\\" + sourceFileName; // 代入される例:"C:\Users\ユーザー名\AppData\LocalLow\Cygames\umamusume\dat\EK\EK5FIH4TY23JRVW2XNTCNCEQGSZSRFPT"
                         var copyFilePath = Path.Combine(extractFolderName, fileDir);
 
-                        if (File.Exists(copyFilePath)) // もしコピーしようとしたファイルが存在していたらそのファイルがコピー元のファイルと一致しているか確認し、していた場合はスキップして、異なる場合は削除して続行します
+                        if (!fileDir.Split("/").Last().Contains(dumpTarget) && isDumpTargetFile) // ファイルをダンプするモードでsql側で名前を検索するとき、"sound/v/snd_voi_race_104602.acb"からファイル名の"snd_voi_race_104602.acb"だけを
+                        {                                                                        // 抜き出すということをどうやるのかわからなかったので、一旦ファイルパスごと検索して、そしてここでファイル名のみ抜き出して検索するということをしています。
+                            PrintLogIfVerboseModeIsOn($"{fileDir}は名前に\"{dumpTarget}\"が含まれていないため、スキップしました。");
+                            willBeCopiedFilesAmount--;
+                            skippedFilesAmount++;
+                            continue;
+                        }
+
+                        if (File.Exists(copyFilePath)) // もしコピーしようとしたファイルが存在していたらそのファイルがコピー元のファイルと一致しているか確認し、一致している場合はスキップして、一致していない場合は削除して続行します
                         {
                             if (FileCompare(sourceFileDir, copyFilePath))
                             {
@@ -104,13 +114,6 @@ namespace Umamusume_Assets_Extractor
 
                             PrintLogIfVerboseModeIsOn($"{fileDir}はコピーされていますが、内容が異なるので削除してコピーし直します。");
                             File.Delete(copyFilePath);
-                        }
-
-                        if (reader.GetString(0).Substring(0, 2) == "//")
-                        {
-                            willBeCopiedFilesAmount--;
-                            skippedFilesAmount++;
-                            continue;
                         }
 
                         PrintLogIfVerboseModeIsOn($"{sourceFileName} -> {fileDir}");
@@ -238,8 +241,7 @@ namespace Umamusume_Assets_Extractor
                 command.CommandText = $@"
                                             SELECT {filePathColumn}
                                             FROM {tableName}
-                                            WHERE {filePathColumn}
-                                            LIKE ""//%""
+                                            WHERE {fileTypeColumn} = ""manifest""
                                         ";
 
                 using (var reader = command.ExecuteReader())
@@ -250,6 +252,22 @@ namespace Umamusume_Assets_Extractor
                     }
                 }
             }
+        }
+
+        public static string GetRefinementString(string dumpTarget)
+        {
+            var refinementString = "";
+            if (dumpTarget != "")
+                if (isDumpTargetFile)
+                    refinementString += @$"
+                                                    AND {filePathColumn} LIKE ""%{dumpTarget}%""
+                                               ";
+                else
+                    refinementString += @$"
+                                                    AND {filePathColumn} LIKE ""{dumpTarget}/%""
+                                               ";
+
+            return refinementString;
         }
     }
 }
