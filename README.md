@@ -4,7 +4,7 @@
 ## 実行には.NET Runtimeが必要です(重要)
 https://dotnet.microsoft.com/ja-jp/download
 
-.NET Runtimeをダウンロードする ->「コンソールアプリの実行」のお使いのアーキテクチャのRuntimeをダウンロードしてください。(例:32bitの人はX32を、64bitの人はX64のダウンロードを押してください)
+.NET Runtimeをダウンロードする ->「コンソールアプリの実行」のお使いのアーキテクチャのRuntimeをダウンロードしてください。(例:32bitの人はX86を、64bitの人はX64のダウンロードを押してください)
 ダウンロードが終わったらインストーラーを起動してインストールを行ってください。
 ![image](https://user-images.githubusercontent.com/90076182/194742385-3c5dfef4-0169-44ab-a0be-305424e73dfd.png)
 
