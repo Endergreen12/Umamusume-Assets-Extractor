@@ -4,7 +4,9 @@
 ## 実行には.NET Runtimeが必要です(重要)
 https://dotnet.microsoft.com/ja-jp/download/dotnet/7.0
 
-.NET Runtime という欄のところからお使いのOSとアーキテクチャにあっているものをダウンロードしてインストールしてください。
+上のサイトを開いて、.NET Runtime という欄のところからお使いのOSと
+
+アーキテクチャにあっているものをダウンロードしてインストールしてください。
 
 ![image](https://user-images.githubusercontent.com/90076182/229263290-757a40f5-65cb-4140-84d8-0b13a2c8e448.png)
 
