@@ -23,8 +23,8 @@ if (!File.Exists(metaPath))
 // ログを表示するかの確認
 Console.WriteLine("コンソールにログを表示しますか？");
 Console.WriteLine("表示すると、実行速度が少し遅くなります。速度を求める場合は表示しないことをお勧めします。表示しなくてもタイトルバーで進捗を確認できます。");
-Console.Write("表示する場合はYを、しない場合は他のキーを押してください:");
-verboseMode = Console.ReadKey().Key == ConsoleKey.Y;
+Console.Write("表示する場合はyを、しない場合は他のキーを入力してEnterを押してください:");
+verboseMode = Console.ReadLine() == "y";
 
 // ダンプする対象がファイルかフォルダかの確認
 Console.WriteLine();
@@ -32,8 +32,8 @@ Console.WriteLine();
 Console.WriteLine("ファイルとフォルダーどちらをダンプしますか？");
 Console.WriteLine("ファイルをダンプする場合、入力された文字が名前に入っているファイルがすべてダンプされます。");
 Console.WriteLine("フォルダーをダンプする場合、入力された文字の名前のフォルダーをダンプします。");
-Console.Write("ファイルをダンプする場合はYを、フォルダーをダンプする場合はそれ以外のキーを押してください:");
-isDumpTargetFile = Console.ReadKey().Key == ConsoleKey.Y;
+Console.Write("ファイルをダンプする場合はyを、フォルダーをダンプする場合はそれ以外の文字を入力してEnterを押してください:");
+isDumpTargetFile = Console.ReadLine() == "y";
 
 var dumpTargetName = isDumpTargetFile ? "ファイル" : "フォルダー";
 
@@ -69,6 +69,6 @@ if (!Directory.Exists(extractFolderName))
 CopySourceFiles(dumpTarget);
 UpdateConsoleTitle("done");
 
-Console.WriteLine("展開したフォルダーをエクスプローラーで開きますか？(Y)");
-if (Console.ReadKey().Key == ConsoleKey.Y)
+Console.WriteLine("展開したフォルダーをエクスプローラーで開きますか？(y)");
+if (Console.ReadLine() == "y")
     System.Diagnostics.Process.Start("explorer.exe", extractFolderName);
