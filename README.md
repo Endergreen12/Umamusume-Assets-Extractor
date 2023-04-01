@@ -2,13 +2,11 @@
 ウマ娘のアセットファイルをダンプします (datフォルダにある英語の羅列のファイルに本来の名前を付けてコピーします)
 
 ## 実行には.NET Runtimeが必要です(重要)
-https://dotnet.microsoft.com/ja-jp/download
+https://dotnet.microsoft.com/ja-jp/download/dotnet/7.0
 
-.NET Runtimeをダウンロードする ->「コンソールアプリの実行」のお使いのアーキテクチャのRuntimeをダウンロードしてください。(例:32bitの人はX86を、64bitの人はX64のダウンロードを押してください)
-ダウンロードが終わったらインストーラーを起動してインストールを行ってください。
-![image](https://user-images.githubusercontent.com/90076182/194742385-3c5dfef4-0169-44ab-a0be-305424e73dfd.png)
+.NET Runtime という欄のところからお使いのOSとアーキテクチャにあっているものをダウンロードしてインストールしてください。
 
-
+![image](https://user-images.githubusercontent.com/90076182/229263290-757a40f5-65cb-4140-84d8-0b13a2c8e448.png)
 
 ## 何をする？
 ウマ娘のアセットファイルは、そのまま置いてあるわけではなく、英語の羅列のファイルになっています。
