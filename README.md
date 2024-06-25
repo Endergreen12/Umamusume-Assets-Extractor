@@ -1,15 +1,6 @@
 # Umamusume-Assets-Extractor
 ウマ娘のアセットファイルをダンプします (datフォルダにある英語の羅列のファイルに本来の名前を付けてコピーします)
 
-## 実行には.NET Runtimeが必要です(重要)
-https://dotnet.microsoft.com/ja-jp/download/dotnet/7.0
-
-上のサイトを開いて、.NET Runtime という欄のところからお使いのOSと
-
-アーキテクチャにあっているものをダウンロードしてインストールしてください。
-
-![image](https://user-images.githubusercontent.com/90076182/229263290-757a40f5-65cb-4140-84d8-0b13a2c8e448.png)
-
 ## 何をする？
 ウマ娘のアセットファイルは、そのまま置いてあるわけではなく、英語の羅列のファイルになっています。
 
@@ -69,3 +60,14 @@ BLOW my GALEのライブIDは1048なので、BLOW my GALEの音楽ファイル�
 https://github.com/Endergreen12/Umamusume-ID-Dumper
 
 このアプリは、キャラID、衣装ID、ライブIDそしてそれに対応するキャラやライブの名前が書いてあるテキストファイルを生成してくれます。
+
+## 古いバージョンの実行には.NET Runtimeが必要です
+自己完結型に変更したので最新のリリースでは必要ありません。
+
+https://dotnet.microsoft.com/ja-jp/download/dotnet/7.0
+
+上のサイトを開いて、.NET Runtime という欄のところからお使いのOSと
+
+アーキテクチャにあっているものをダウンロードしてインストールしてください。
+
+![image](https://user-images.githubusercontent.com/90076182/229263290-757a40f5-65cb-4140-84d8-0b13a2c8e448.png)
